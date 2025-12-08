@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw, Save, Clock, Trash2 } from "lucide-react";
 import { TimeRecord, ScoreData } from "@/types/alphadash";
+import { cn } from "@/lib/utils";
 
 interface StopwatchProps {
   scores: ScoreData;
@@ -60,45 +61,57 @@ export function Stopwatch({ scores, savedTimes, onSaveTime, onDeleteTime }: Stop
   };
 
   return (
-    <div className="glass-card rounded-2xl p-6 animate-slide-up">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center">
-          <Clock className="w-5 h-5 text-accent-foreground" />
+    <div className="glass-card p-5 animate-slide-up">
+      <div className="section-header">
+        <div className="section-icon section-icon-accent">
+          <Clock className="w-5 h-5" />
         </div>
-        <h2 className="font-display text-xl font-bold text-foreground">
-          Cronômetro
-        </h2>
+        <div>
+          <h2 className="font-display text-lg font-bold text-foreground">
+            Cronômetro
+          </h2>
+          <p className="text-xs text-muted-foreground">Registre seus tempos</p>
+        </div>
       </div>
 
-      <div className="text-center mb-6">
+      <div className="text-center py-6">
         <div
-          className={`font-display text-5xl md:text-6xl font-bold tracking-wider ${
+          className={cn(
+            "font-display text-5xl md:text-6xl font-bold tracking-tight transition-colors duration-300",
             isRunning ? "text-primary" : "text-foreground"
-          } transition-colors duration-300`}
+          )}
         >
           {formatTime(time)}
         </div>
+        {isRunning && (
+          <div className="mt-2">
+            <span className="inline-flex items-center gap-1.5 text-xs text-primary font-medium">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              Cronometrando...
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="flex justify-center gap-3 mb-6">
+      <div className="flex justify-center gap-2 mb-5">
         <Button
           variant={isRunning ? "accent" : "default"}
           size="lg"
           onClick={handleStartStop}
-          className="w-32"
+          className="w-28"
         >
           {isRunning ? (
             <>
-              <Pause className="w-5 h-5" /> Pausar
+              <Pause className="w-4 h-4" /> Pausar
             </>
           ) : (
             <>
-              <Play className="w-5 h-5" /> Iniciar
+              <Play className="w-4 h-4" /> Iniciar
             </>
           )}
         </Button>
         <Button variant="outline" size="lg" onClick={handleReset}>
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4" />
         </Button>
         <Button
           variant="info"
@@ -106,40 +119,47 @@ export function Stopwatch({ scores, savedTimes, onSaveTime, onDeleteTime }: Stop
           onClick={handleSave}
           disabled={time === 0}
         >
-          <Save className="w-5 h-5" /> Salvar
+          <Save className="w-4 h-4" /> Salvar
         </Button>
       </div>
 
       {savedTimes.length > 0 && (
-        <div className="border-t border-border pt-4">
-          <h3 className="font-display font-semibold text-foreground mb-3">
-            Tempos Salvos
-          </h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+        <div className="border-t border-border/50 pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display font-semibold text-sm text-foreground">
+              Tempos Salvos
+            </h3>
+            <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+              {savedTimes.length} registro{savedTimes.length > 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
             {savedTimes.map((record, index) => (
               <div
                 key={record.id}
-                className="flex items-center justify-between bg-secondary/50 rounded-lg px-4 py-2"
+                className="flex items-center justify-between bg-secondary/40 rounded-lg px-3 py-2 group hover:bg-secondary/60 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-primary font-semibold">
-                    #{savedTimes.length - index}
+                  <span className="w-6 h-6 rounded-md bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                    {savedTimes.length - index}
                   </span>
-                  <span className="font-mono font-medium">
+                  <span className="font-mono font-semibold text-sm">
                     {formatTime(record.time)}
                   </span>
-                  <span className="text-muted-foreground text-sm">
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground hidden sm:block">
                     {record.date}
                   </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeleteTime(record.id)}
+                    className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive hover:bg-destructive/10 h-7 w-7 p-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDeleteTime(record.id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
               </div>
             ))}
           </div>
