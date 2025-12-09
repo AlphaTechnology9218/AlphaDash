@@ -44,6 +44,14 @@ export function DashboardView({
       {/* Quick Stats */}
       <QuickStats scores={scores} savedTimes={savedTimes} />
 
+      {/* Stopwatch at the top */}
+      <Stopwatch
+        scores={scores}
+        savedTimes={savedTimes}
+        onSaveTime={handleSaveTime}
+        onDeleteTime={handleDeleteTime}
+      />
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="xl:col-span-2 space-y-6">
@@ -195,14 +203,6 @@ export function DashboardView({
               maxScore={MAX_SCORES.departamentoEcologico}
             />
           </section>
-
-          {/* Stopwatch */}
-          <Stopwatch
-            scores={scores}
-            savedTimes={savedTimes}
-            onSaveTime={handleSaveTime}
-            onDeleteTime={handleDeleteTime}
-          />
         </div>
 
         {/* Sidebar - Score Overview */}

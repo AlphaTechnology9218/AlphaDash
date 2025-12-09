@@ -17,10 +17,12 @@ import {
   Area,
 } from "recharts";
 import { ScoreData, TimeRecord, Session, calculateTotalScore } from "@/types/alphadash";
-import { BarChart3, Download, TrendingUp, PieChart as PieChartIcon, Clock } from "lucide-react";
+import { BarChart3, Download, TrendingUp, PieChart as PieChartIcon, Clock, FileSpreadsheet, FileJson, FileText, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import html2canvas from "html2canvas";
 import { toast } from "@/hooks/use-toast";
+import { exportToCSV, exportToJSON, exportToExcel, exportTimesToCSV } from "@/lib/exportUtils";
 
 interface AnalyticsViewProps {
   scores: ScoreData;
@@ -125,10 +127,53 @@ export function AnalyticsView({ scores, savedTimes, sessions }: AnalyticsViewPro
             </p>
           </div>
         </div>
-        <Button onClick={exportCharts} variant="default" size="sm">
-          <Download className="w-4 h-4" />
-          Exportar Gráficos
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="default" size="sm">
+              <Download className="w-4 h-4" />
+              Exportar Dados
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Gráficos</DropdownMenuLabel>
+            <DropdownMenuItem onClick={exportCharts}>
+              <Image className="w-4 h-4 mr-2" />
+              Exportar como PNG
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Dados das Sessões</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => {
+              exportToCSV(sessions, savedTimes);
+              toast({ title: "CSV exportado!", description: "Arquivo salvo com sucesso." });
+            }}>
+              <FileText className="w-4 h-4 mr-2" />
+              Exportar como CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              exportToExcel(sessions, savedTimes);
+              toast({ title: "Excel exportado!", description: "Arquivo salvo com sucesso." });
+            }}>
+              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              Exportar como Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              exportToJSON(sessions, savedTimes, scores);
+              toast({ title: "JSON exportado!", description: "Arquivo salvo com sucesso." });
+            }}>
+              <FileJson className="w-4 h-4 mr-2" />
+              Exportar como JSON
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Tempos</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => {
+              exportTimesToCSV(savedTimes);
+              toast({ title: "Tempos exportados!", description: "Arquivo CSV salvo com sucesso." });
+            }}>
+              <Clock className="w-4 h-4 mr-2" />
+              Exportar tempos (CSV)
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div ref={chartsRef} className="space-y-6 bg-background p-4 rounded-2xl">
