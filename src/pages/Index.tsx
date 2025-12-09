@@ -114,9 +114,10 @@ const Index = () => {
                   <Leaf className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl font-bold text-gradient">
+                  <h1 className="font-display text-xl font-bold text-foreground">
                     AlphaDash
                   </h1>
+                  <p className="text-xs text-muted-foreground hidden sm:block">Pontuação Ecológica</p>
                 </div>
               </div>
 
