@@ -83,7 +83,7 @@ export function ScoreOverview({ scores }: ScoreOverviewProps) {
 
       {/* Total Score */}
       <div className="text-center py-4 border-b border-border/50">
-        <div className="text-5xl font-display font-bold text-gradient mb-1">
+        <div className="text-5xl font-display font-bold text-primary mb-1">
           {total}
         </div>
         <p className="text-sm text-muted-foreground">
