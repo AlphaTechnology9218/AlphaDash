@@ -5,35 +5,41 @@ import { HistoryView } from "@/components/views/HistoryView";
 import { AnalyticsView } from "@/components/views/AnalyticsView";
 import { SettingsView } from "@/components/views/SettingsView";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useCloudScores, useCloudTimes, useCloudSessions } from "@/hooks/useCloudStorage";
 import { ScoreData, TimeRecord, Session, defaultScoreData, calculateTotalScore, calculateMaxPossibleScore, calculateAccuracy } from "@/types/alphadash";
 import { Leaf, Menu } from "lucide-react";
+import { dataAPI } from "@/lib/api";
 
 export type ViewType = "dashboard" | "history" | "analytics" | "settings";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewType>("dashboard");
-  const [scores, setScores] = useLocalStorage<ScoreData>("alphadash-scores", defaultScoreData);
-  const [savedTimes, setSavedTimes] = useLocalStorage<TimeRecord[]>("alphadash-times", []);
-  const [sessions, setSessions] = useLocalStorage<Session[]>("alphadash-sessions", []);
+  const [scores, setScores] = useCloudScores();
+  const [savedTimes, addTime, deleteTime] = useCloudTimes();
+  const [sessions, addSession, deleteSession] = useCloudSessions();
 
   const updateScore = (key: keyof ScoreData, value: number) => {
     setScores((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSaveTime = (record: TimeRecord) => {
-    setSavedTimes((prev) => [record, ...prev]);
+    addTime(record);
   };
 
   const handleDeleteTime = (id: string) => {
-    setSavedTimes((prev) => prev.filter((r) => r.id !== id));
+    deleteTime(id);
   };
 
-  const handleResetScores = () => {
-    setScores(defaultScoreData);
+  const handleResetScores = async () => {
+    try {
+      await dataAPI.resetScores();
+      setScores(defaultScoreData);
+    } catch (error) {
+      console.error("Erro ao resetar scores:", error);
+    }
   };
 
-  const handleSaveSession = (name: string) => {
+  const handleSaveSession = async (name: string) => {
     const newSession: Session = {
       id: Date.now().toString(),
       name,
@@ -44,18 +50,20 @@ const Index = () => {
       maxPossibleScore: calculateMaxPossibleScore(),
       accuracyPercentage: calculateAccuracy(scores),
     };
-    setSessions((prev) => [newSession, ...prev]);
-    handleResetScores();
-    setSavedTimes([]);
+    await addSession(newSession);
+    await handleResetScores();
+    // Limpar times locais após salvar sessão (eles já estão salvos na sessão)
+    savedTimes.forEach((time) => deleteTime(time.id));
   };
 
   const handleDeleteSession = (id: string) => {
-    setSessions((prev) => prev.filter((s) => s.id !== id));
+    deleteSession(id);
   };
 
   const handleLoadSession = (session: Session) => {
     setScores(session.scores);
-    setSavedTimes(session.times);
+    // Os times da sessão são apenas para visualização no histórico
+    // Não precisamos carregá-los de volta para o dashboard
     setCurrentView("dashboard");
   };
 
