@@ -1,10 +1,11 @@
-import { LayoutDashboard, History, BarChart3, Settings, Leaf, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, History, BarChart3, Settings, Leaf, ChevronLeft, Cpu, FlaskConical, FolderKanban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,11 +14,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import type { ViewType } from "@/pages/Index";
+import type { ViewType, AreaType } from "@/pages/Index";
 
 interface AppSidebarProps {
   currentView: ViewType;
   onViewChange: (view: ViewType) => void;
+  currentArea: AreaType;
+  onAreaChange: (area: AreaType) => void;
 }
 
 const menuItems = [
@@ -27,7 +30,13 @@ const menuItems = [
   { id: "settings" as ViewType, title: "Configurações", icon: Settings },
 ];
 
-export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
+const areaItems = [
+  { id: "te" as AreaType, title: "Tecnologia e Engenharia", shortTitle: "TE", icon: Cpu },
+  { id: "mc" as AreaType, title: "Mérito Científico", shortTitle: "MC", icon: FlaskConical },
+  { id: "om" as AreaType, title: "Organização e Método", shortTitle: "OM", icon: FolderKanban },
+];
+
+export function AppSidebar({ currentView, onViewChange, currentArea, onAreaChange }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
 
@@ -58,27 +67,31 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4">
+        {/* Areas Section */}
         <SidebarGroup>
+          <SidebarGroupLabel className="text-sidebar-foreground/50 text-xs uppercase tracking-wider mb-2 px-3">
+            {!isCollapsed && "Áreas"}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {menuItems.map((item) => (
+              {areaItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
-                    onClick={() => onViewChange(item.id)}
+                    onClick={() => onAreaChange(item.id)}
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
-                      currentView === item.id
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                      currentArea === item.id
+                        ? "bg-accent text-accent-foreground shadow-md"
                         : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                     )}
                     tooltip={isCollapsed ? item.title : undefined}
                   >
                     <item.icon className={cn(
                       "w-5 h-5 flex-shrink-0",
-                      currentView === item.id ? "text-sidebar-primary-foreground" : ""
+                      currentArea === item.id ? "text-accent-foreground" : ""
                     )} />
                     {!isCollapsed && (
-                      <span className="font-medium text-sm">{item.title}</span>
+                      <span className="font-medium text-sm">{item.shortTitle}</span>
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -86,6 +99,41 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Navigation Section - Only show for TE area */}
+        {currentArea === "te" && (
+          <SidebarGroup className="mt-4">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 text-xs uppercase tracking-wider mb-2 px-3">
+              {!isCollapsed && "Navegação"}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-1">
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => onViewChange(item.id)}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200",
+                        currentView === item.id
+                          ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                          : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                      )}
+                      tooltip={isCollapsed ? item.title : undefined}
+                    >
+                      <item.icon className={cn(
+                        "w-5 h-5 flex-shrink-0",
+                        currentView === item.id ? "text-sidebar-primary-foreground" : ""
+                      )} />
+                      {!isCollapsed && (
+                        <span className="font-medium text-sm">{item.title}</span>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border/50">

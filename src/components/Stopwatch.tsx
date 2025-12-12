@@ -29,6 +29,19 @@ export function Stopwatch({ scores, savedTimes, onSaveTime, onDeleteTime }: Stop
     };
   }, [isRunning]);
 
+  // F5 key handler to toggle stopwatch
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "F5") {
+        e.preventDefault();
+        setIsRunning((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const formatTime = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);

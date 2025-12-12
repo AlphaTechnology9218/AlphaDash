@@ -5,41 +5,37 @@ import { HistoryView } from "@/components/views/HistoryView";
 import { AnalyticsView } from "@/components/views/AnalyticsView";
 import { SettingsView } from "@/components/views/SettingsView";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useCloudScores, useCloudTimes, useCloudSessions } from "@/hooks/useCloudStorage";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { ScoreData, TimeRecord, Session, defaultScoreData, calculateTotalScore, calculateMaxPossibleScore, calculateAccuracy } from "@/types/alphadash";
 import { Leaf, Menu } from "lucide-react";
-import { dataAPI } from "@/lib/api";
 
 export type ViewType = "dashboard" | "history" | "analytics" | "settings";
+export type AreaType = "te" | "mc" | "om";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewType>("dashboard");
-  const [scores, setScores] = useCloudScores();
-  const [savedTimes, addTime, deleteTime] = useCloudTimes();
-  const [sessions, addSession, deleteSession] = useCloudSessions();
+  const [currentArea, setCurrentArea] = useState<AreaType>("te");
+  const [scores, setScores] = useLocalStorage<ScoreData>("alphadash-scores", defaultScoreData);
+  const [savedTimes, setSavedTimes] = useLocalStorage<TimeRecord[]>("alphadash-times", []);
+  const [sessions, setSessions] = useLocalStorage<Session[]>("alphadash-sessions", []);
 
   const updateScore = (key: keyof ScoreData, value: number) => {
     setScores((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSaveTime = (record: TimeRecord) => {
-    addTime(record);
+    setSavedTimes((prev) => [record, ...prev]);
   };
 
   const handleDeleteTime = (id: string) => {
-    deleteTime(id);
+    setSavedTimes((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const handleResetScores = async () => {
-    try {
-      await dataAPI.resetScores();
-      setScores(defaultScoreData);
-    } catch (error) {
-      console.error("Erro ao resetar scores:", error);
-    }
+  const handleResetScores = () => {
+    setScores(defaultScoreData);
   };
 
-  const handleSaveSession = async (name: string) => {
+  const handleSaveSession = (name: string) => {
     const newSession: Session = {
       id: Date.now().toString(),
       name,
@@ -50,24 +46,45 @@ const Index = () => {
       maxPossibleScore: calculateMaxPossibleScore(),
       accuracyPercentage: calculateAccuracy(scores),
     };
-    await addSession(newSession);
-    await handleResetScores();
-    // Limpar times locais após salvar sessão (eles já estão salvos na sessão)
-    savedTimes.forEach((time) => deleteTime(time.id));
+    setSessions((prev) => [newSession, ...prev]);
+    handleResetScores();
+    setSavedTimes([]);
   };
 
   const handleDeleteSession = (id: string) => {
-    deleteSession(id);
+    setSessions((prev) => prev.filter((s) => s.id !== id));
   };
 
   const handleLoadSession = (session: Session) => {
     setScores(session.scores);
-    // Os times da sessão são apenas para visualização no histórico
-    // Não precisamos carregá-los de volta para o dashboard
+    setSavedTimes(session.times);
     setCurrentView("dashboard");
   };
 
+  const renderDevelopmentMessage = (area: string) => (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="w-20 h-20 rounded-2xl bg-secondary/60 flex items-center justify-center mb-6">
+        <Leaf className="w-10 h-10 text-muted-foreground" />
+      </div>
+      <h2 className="font-display text-2xl font-bold text-foreground mb-2">
+        {area}
+      </h2>
+      <p className="text-muted-foreground max-w-md">
+        Esta área ainda está em desenvolvimento. Em breve teremos novidades!
+      </p>
+    </div>
+  );
+
   const renderView = () => {
+    // If not in TE area, show development message
+    if (currentArea === "mc") {
+      return renderDevelopmentMessage("Mérito Científico");
+    }
+    if (currentArea === "om") {
+      return renderDevelopmentMessage("Organização e Método");
+    }
+
+    // TE area - show normal views
     switch (currentView) {
       case "dashboard":
         return (
@@ -107,7 +124,12 @@ const Index = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar currentView={currentView} onViewChange={setCurrentView} />
+        <AppSidebar 
+          currentView={currentView} 
+          onViewChange={setCurrentView}
+          currentArea={currentArea}
+          onAreaChange={setCurrentArea}
+        />
         
         <main className="flex-1 flex flex-col min-h-screen">
           {/* Header */}
