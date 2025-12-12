@@ -3,9 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+<<<<<<< HEAD
 import { Leaf, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authAPI } from "@/lib/api";
+=======
+import { Leaf, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,6 +24,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     
+<<<<<<< HEAD
     try {
       await authAPI.login(email, password);
       toast({
@@ -35,6 +41,17 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
+=======
+    // TODO: Implementar lógica de autenticação
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Login realizado!",
+        description: "Bem-vindo de volta ao AlphaDash.",
+      });
+      navigate("/");
+    }, 1000);
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
   };
 
   return (
@@ -89,28 +106,44 @@ export default function Login() {
               </div>
             </div>
 
+<<<<<<< HEAD
             <div className="flex items-center justify-between">
               <Link 
                 to="/forgot-password" 
                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+=======
+            <div className="flex justify-end">
+              <Link 
+                to="/forgot-password" 
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
               >
                 Esqueceu a senha?
               </Link>
             </div>
 
+<<<<<<< HEAD
             <Button type="submit" className="w-full gap-2" disabled={isLoading}>
               {isLoading ? "Entrando..." : "Entrar"}
               {!isLoading && <ArrowRight className="w-4 h-4" />}
+=======
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Entrando..." : "Entrar"}
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Não tem uma conta?{" "}
+<<<<<<< HEAD
               <Link 
                 to="/signup" 
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
+=======
+              <Link to="/signup" className="text-primary hover:text-primary/80 font-medium transition-colors">
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
                 Criar conta
               </Link>
             </p>
@@ -120,4 +153,7 @@ export default function Login() {
     </div>
   );
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc

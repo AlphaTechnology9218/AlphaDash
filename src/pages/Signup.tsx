@@ -3,9 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+<<<<<<< HEAD
 import { Leaf, Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authAPI } from "@/lib/api";
+=======
+import { Leaf, Mail, Lock, Eye, EyeOff, User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -20,7 +25,11 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
     if (password !== confirmPassword) {
       toast({
         title: "Erro",
@@ -41,6 +50,7 @@ export default function Signup() {
 
     setIsLoading(true);
     
+<<<<<<< HEAD
     try {
       await authAPI.signup(name, email, password);
       toast({
@@ -57,6 +67,17 @@ export default function Signup() {
     } finally {
       setIsLoading(false);
     }
+=======
+    // TODO: Implementar lógica de cadastro
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Conta criada!",
+        description: "Sua conta foi criada com sucesso.",
+      });
+      navigate("/login");
+    }, 1000);
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
   };
 
   return (
@@ -150,20 +171,30 @@ export default function Signup() {
               </div>
             </div>
 
+<<<<<<< HEAD
             <Button type="submit" className="w-full gap-2" disabled={isLoading}>
               {isLoading ? "Criando conta..." : "Criar conta"}
               {!isLoading && <ArrowRight className="w-4 h-4" />}
+=======
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Criando conta..." : "Criar conta"}
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Já tem uma conta?{" "}
+<<<<<<< HEAD
               <Link 
                 to="/login" 
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Fazer login
+=======
+              <Link to="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
+                Entrar
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
               </Link>
             </p>
           </div>
@@ -172,4 +203,7 @@ export default function Signup() {
     </div>
   );
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc

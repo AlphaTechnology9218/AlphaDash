@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
+=======
+import { useState } from "react";
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +20,18 @@ import {
   LogOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+<<<<<<< HEAD
 import { authAPI } from "@/lib/api";
 
 export default function Account() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+=======
+
+export default function Account() {
+  const [name, setName] = useState("Usuário");
+  const [email, setEmail] = useState("usuario@email.com");
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -32,6 +43,7 @@ export default function Account() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+<<<<<<< HEAD
   useEffect(() => {
     const user = authAPI.getCurrentUser();
     if (user) {
@@ -40,6 +52,8 @@ export default function Account() {
     }
   }, []);
 
+=======
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdatingProfile(true);
@@ -91,7 +105,11 @@ export default function Account() {
   };
 
   const handleLogout = () => {
+<<<<<<< HEAD
     authAPI.logout();
+=======
+    // TODO: Implementar lógica de logout
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc
     toast({
       title: "Saindo...",
       description: "Você foi desconectado.",
@@ -259,4 +277,8 @@ export default function Account() {
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 080ccb36f7e52678ca30626daa71d3fa742913fc

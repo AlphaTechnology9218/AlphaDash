@@ -9,7 +9,16 @@ import dataRoutes from "./routes/data.js";
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:8080",
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Rotas
