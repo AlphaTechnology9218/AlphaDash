@@ -22,6 +22,19 @@ app.use(cors({
 app.use(express.json());
 
 // Rotas
+app.get("/", (_req, res) => {
+  res.json({ 
+    message: "AlphaDash API",
+    version: "1.0.0",
+    status: "online",
+    endpoints: {
+      health: "/health",
+      auth: "/api/auth",
+      data: "/api/data"
+    }
+  });
+});
+
 app.get("/health", (_req, res) => {
   const states = ["desconectado", "conectado", "conectando", "desconectando"];
   res.json({ ok: true, db: states[mongoose.connection.readyState] ?? "desconhecido" });
