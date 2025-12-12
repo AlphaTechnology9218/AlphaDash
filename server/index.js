@@ -13,12 +13,37 @@ const allowedOrigins = [
   "http://localhost:8080",
   "http://localhost:5173",
   process.env.FRONTEND_URL,
+  // Permitir todas as URLs do Vercel (preview + production)
+  /^https:\/\/alphadashtbr5.*\.vercel\.app$/,
 ].filter(Boolean);
 
-app.use(cors({
-  origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+// Função para verificar origem permitida
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Permitir requisições sem origem (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    
+    // Verificar se a origem está na lista permitida
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return origin === allowed;
+      }
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed || allowedOrigins.length === 0) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rotas
