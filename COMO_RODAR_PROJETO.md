@@ -207,3 +207,4 @@ Este erro acontece quando:
 - `CONFIGURAR_RENDER.md` - Deploy do backend
 - `GUIA_DEPLOY_PWA.md` - Deploy completo
 
+

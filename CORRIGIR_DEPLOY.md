@@ -197,3 +197,4 @@ Se o Render estiver configurado errado:
 - Frontend: `https://seu-app.vercel.app` (novo)
 - Tudo funcionando! 🎉
 
+
