@@ -67,6 +67,13 @@ export const formsAPI = {
   },
 
   /**
+   * Lista todas as pastas compartilhadas
+   */
+  listFolders: async () => {
+    return fetchWithAuth("/forms/folders");
+  },
+
+  /**
    * Remove uma resposta sincronizada
    */
   deleteResponse: async (responseId: string) => {

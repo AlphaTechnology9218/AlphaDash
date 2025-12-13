@@ -56,21 +56,31 @@ No arquivo JSON baixado, procure por:
 
 **Copie este email!**
 
-### 2.2 Compartilhar Formulários
+### 2.2 Opção 1: Compartilhar Pasta Inteira (RECOMENDADO) ⭐
 
-1. Abra seu Google Form
-2. Clique nos **3 pontos** (⋮) no canto superior direito
-3. Selecione **Settings** → **General**
-4. Ative **"Collect email addresses"** (opcional, mas recomendado)
-5. Volte ao formulário
-6. Clique em **Send** → **Link** → Copie o link
-7. No Google Drive, encontre o arquivo do formulário
-8. Clique com botão direito → **Share**
-9. Cole o email do Service Account
-10. Dê permissão de **Viewer** ou **Editor**
-11. Clique em **Send**
+**Esta é a forma mais fácil!** Compartilhe uma pasta do Google Drive e todos os formulários dentro dela serão acessíveis.
 
-**⚠️ IMPORTANTE**: Repita isso para TODOS os formulários que deseja integrar!
+1. No Google Drive, crie uma pasta (ex: "Formulários AlphaDash") ou use uma existente
+2. Mova todos os formulários que deseja integrar para essa pasta
+3. Clique com botão direito na pasta → **Share**
+4. Cole o email do Service Account
+5. Dê permissão de **Viewer** ou **Editor**
+6. Marque **"Notify people"** como desmarcado (não precisa notificar)
+7. Clique em **Send**
+
+**✅ Pronto!** Todos os formulários na pasta agora são acessíveis pela Service Account.
+
+### 2.3 Opção 2: Compartilhar Formulários Individuais
+
+Se preferir compartilhar um por um:
+
+1. No Google Drive, encontre o arquivo do formulário
+2. Clique com botão direito → **Share**
+3. Cole o email do Service Account
+4. Dê permissão de **Viewer** ou **Editor**
+5. Clique em **Send**
+
+**⚠️ IMPORTANTE**: Se usar esta opção, repita para cada formulário.
 
 ---
 

@@ -92,9 +92,48 @@ export async function fetchFormResponses(formId) {
 
 /**
  * Lista todos os formulários do usuário
+ * @param {string} folderId - (Opcional) ID da pasta do Google Drive para filtrar
  * @returns {Promise<Array>} Array de formulários
  */
-export async function listForms() {
+export async function listForms(folderId = null) {
+  try {
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+        project_id: process.env.GOOGLE_PROJECT_ID,
+      },
+      scopes: [
+        "https://www.googleapis.com/auth/drive.readonly",
+      ],
+    });
+
+    const drive = google.drive({ version: "v3", auth });
+    
+    // Construir query
+    let query = "mimeType='application/vnd.google-apps.form'";
+    if (folderId) {
+      query += ` and '${folderId}' in parents`;
+    }
+    
+    const response = await drive.files.list({
+      q: query,
+      fields: "files(id, name, createdTime, modifiedTime, parents)",
+      orderBy: "modifiedTime desc",
+    });
+
+    return response.data.files || [];
+  } catch (error) {
+    console.error("Erro ao listar formulários:", error);
+    throw new Error(`Erro ao listar formulários: ${error.message}`);
+  }
+}
+
+/**
+ * Lista todas as pastas compartilhadas (para facilitar organização)
+ * @returns {Promise<Array>} Array de pastas
+ */
+export async function listFolders() {
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -110,15 +149,14 @@ export async function listForms() {
     const drive = google.drive({ version: "v3", auth });
     
     const response = await drive.files.list({
-      q: "mimeType='application/vnd.google-apps.form'",
+      q: "mimeType='application/vnd.google-apps.folder'",
       fields: "files(id, name, createdTime, modifiedTime)",
       orderBy: "modifiedTime desc",
     });
 
     return response.data.files || [];
   } catch (error) {
-    console.error("Erro ao listar formulários:", error);
-    throw new Error(`Erro ao listar formulários: ${error.message}`);
+    console.error("Erro ao listar pastas:", error);
+    throw new Error(`Erro ao listar pastas: ${error.message}`);
   }
 }
-

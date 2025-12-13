@@ -1,17 +1,19 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.js";
 import { FormResponse } from "../models/FormResponse.js";
-import { fetchFormResponses, listForms } from "../services/googleForms.js";
+import { fetchFormResponses, listForms, listFolders } from "../services/googleForms.js";
 
 const router = express.Router();
 
 /**
  * GET /api/forms
  * Lista todos os formulários disponíveis
+ * Query params: folderId (opcional) - ID da pasta para filtrar
  */
 router.get("/", authenticate, async (req, res) => {
   try {
-    const forms = await listForms();
+    const { folderId } = req.query;
+    const forms = await listForms(folderId || null);
     res.json({ success: true, forms });
   } catch (error) {
     console.error("Erro ao listar formulários:", error);
@@ -182,6 +184,23 @@ router.delete("/responses/:responseId", authenticate, async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: error.message || "Erro ao remover resposta" 
+    });
+  }
+});
+
+/**
+ * GET /api/forms/folders
+ * Lista todas as pastas compartilhadas (para facilitar organização)
+ */
+router.get("/folders", authenticate, async (req, res) => {
+  try {
+    const folders = await listFolders();
+    res.json({ success: true, folders });
+  } catch (error) {
+    console.error("Erro ao listar pastas:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message || "Erro ao listar pastas" 
     });
   }
 });
