@@ -2,19 +2,50 @@ import express from "express";
 import { authenticate } from "../middleware/auth.js";
 import { FormResponse } from "../models/FormResponse.js";
 import { fetchFormResponses, listForms, listFolders } from "../services/googleForms.js";
+import { fetchMicrosoftFormResponses, listMicrosoftForms, getMicrosoftFormById } from "../services/microsoftForms.js";
 
 const router = express.Router();
 
 /**
  * GET /api/forms
  * Lista todos os formulários disponíveis
- * Query params: folderId (opcional) - ID da pasta para filtrar
+ * Query params: 
+ *   - folderId (opcional) - ID da pasta para filtrar (Google Forms)
+ *   - source (opcional) - "google" ou "microsoft" para filtrar por origem
  */
 router.get("/", authenticate, async (req, res) => {
   try {
-    const { folderId } = req.query;
-    const forms = await listForms(folderId || null);
-    res.json({ success: true, forms });
+    const { folderId, source } = req.query;
+    
+    const results = {
+      google: [],
+      microsoft: [],
+    };
+
+    // Buscar formulários do Google Forms
+    if (!source || source === "google") {
+      try {
+        results.google = await listForms(folderId || null);
+      } catch (error) {
+        console.error("Erro ao listar formulários do Google:", error);
+      }
+    }
+
+    // Buscar formulários do Microsoft Forms
+    if (!source || source === "microsoft") {
+      try {
+        results.microsoft = await listMicrosoftForms();
+      } catch (error) {
+        console.error("Erro ao listar formulários do Microsoft:", error);
+      }
+    }
+
+    res.json({ 
+      success: true, 
+      google: results.google,
+      microsoft: results.microsoft,
+      total: results.google.length + results.microsoft.length
+    });
   } catch (error) {
     console.error("Erro ao listar formulários:", error);
     res.status(500).json({ 
@@ -27,15 +58,24 @@ router.get("/", authenticate, async (req, res) => {
 /**
  * GET /api/forms/:formId/responses
  * Busca respostas de um formulário específico
+ * Query params: source (opcional) - "google" ou "microsoft" (padrão: "google")
  */
 router.get("/:formId/responses", authenticate, async (req, res) => {
   try {
     const { formId } = req.params;
-    const responses = await fetchFormResponses(formId);
+    const { source = "google" } = req.query;
+    
+    let responses;
+    if (source === "microsoft") {
+      responses = await fetchMicrosoftFormResponses(formId);
+    } else {
+      responses = await fetchFormResponses(formId);
+    }
     
     res.json({ 
       success: true, 
       count: responses.length,
+      source,
       responses 
     });
   } catch (error) {
@@ -50,14 +90,21 @@ router.get("/:formId/responses", authenticate, async (req, res) => {
 /**
  * POST /api/forms/:formId/sync
  * Sincroniza respostas do Forms e salva no banco
+ * Body: { source: "google" | "microsoft" } (opcional, padrão: "google")
  */
 router.post("/:formId/sync", authenticate, async (req, res) => {
   try {
     const { formId } = req.params;
+    const { source = "google" } = req.body;
     const userId = req.user.id;
 
     // Buscar respostas do Forms
-    const responses = await fetchFormResponses(formId);
+    let responses;
+    if (source === "microsoft") {
+      responses = await fetchMicrosoftFormResponses(formId);
+    } else {
+      responses = await fetchFormResponses(formId);
+    }
 
     if (!responses || responses.length === 0) {
       return res.json({ 
@@ -87,6 +134,7 @@ router.post("/:formId/sync", authenticate, async (req, res) => {
         await FormResponse.create({
           formId: formId,
           responseId: response.responseId,
+          source: source,
           timestamp: new Date(response.createTime || response.lastSubmittedTime),
           respondentEmail: response.respondentEmail,
           answers: response.answers,
@@ -119,15 +167,19 @@ router.post("/:formId/sync", authenticate, async (req, res) => {
 /**
  * GET /api/forms/responses
  * Lista todas as respostas sincronizadas do usuário
+ * Query params: formId, source (opcional), limit, skip
  */
 router.get("/responses/all", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { formId, limit = 50, skip = 0 } = req.query;
+    const { formId, source, limit = 50, skip = 0 } = req.query;
 
     const query = { userId };
     if (formId) {
       query.formId = formId;
+    }
+    if (source) {
+      query.source = source;
     }
 
     const responses = await FormResponse.find(query)

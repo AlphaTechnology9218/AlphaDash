@@ -185,8 +185,13 @@ export function HistoryView({ sessions, onDeleteSession, onLoadSession }: Histor
                         <h3 className="font-display font-bold text-lg text-foreground truncate">
                           Resposta do Formulário
                         </h3>
-                        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-accent/15 text-accent">
-                          Forms
+                        <span className={cn(
+                          "px-2 py-0.5 rounded-full text-xs font-semibold",
+                          response.source === "microsoft"
+                            ? "bg-blue-500/15 text-blue-500"
+                            : "bg-accent/15 text-accent"
+                        )}>
+                          {response.source === "microsoft" ? "Microsoft Forms" : "Google Forms"}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">

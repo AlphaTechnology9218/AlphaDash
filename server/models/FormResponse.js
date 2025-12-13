@@ -11,6 +11,12 @@ const formResponseSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  source: {
+    type: String,
+    enum: ["google", "microsoft"],
+    default: "google",
+    index: true,
+  },
   timestamp: {
     type: Date,
     required: true,
@@ -44,6 +50,7 @@ const formResponseSchema = new mongoose.Schema({
 // Índice composto para busca rápida
 formResponseSchema.index({ formId: 1, timestamp: -1 });
 formResponseSchema.index({ userId: 1, timestamp: -1 });
+formResponseSchema.index({ source: 1, formId: 1 });
 
 export const FormResponse = mongoose.model("FormResponse", formResponseSchema);
 

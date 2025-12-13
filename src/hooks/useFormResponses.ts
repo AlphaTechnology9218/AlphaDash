@@ -6,6 +6,7 @@ export interface FormResponse {
   _id?: string;
   formId: string;
   responseId: string;
+  source?: "google" | "microsoft";
   timestamp: string;
   respondentEmail?: string;
   answers: Record<string, any>;
