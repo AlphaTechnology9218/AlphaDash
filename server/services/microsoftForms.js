@@ -3,8 +3,17 @@ import { ConfidentialClientApplication } from "@azure/msal-node";
 
 /**
  * Configura o cliente do Microsoft Graph API
+ * Suporta tanto Client Credentials quanto token de usuário direto
  */
-export function getMicrosoftGraphClient() {
+export function getMicrosoftGraphClient(userToken = null) {
+  // Se um token de usuário foi fornecido, usar diretamente
+  if (userToken) {
+    return {
+      getAccessToken: async () => userToken,
+    };
+  }
+
+  // Caso contrário, usar Client Credentials
   const msalConfig = {
     auth: {
       clientId: process.env.MICROSOFT_CLIENT_ID,
@@ -28,11 +37,12 @@ export function getMicrosoftGraphClient() {
 /**
  * Busca todas as respostas de um formulário do Microsoft Forms
  * @param {string} formId - ID do formulário do Microsoft Forms
+ * @param {string} userToken - (Opcional) Token de usuário para usar diretamente
  * @returns {Promise<Array>} Array de respostas
  */
-export async function fetchMicrosoftFormResponses(formId) {
+export async function fetchMicrosoftFormResponses(formId, userToken = null) {
   try {
-    const authClient = getMicrosoftGraphClient();
+    const authClient = getMicrosoftGraphClient(userToken);
     const accessToken = await authClient.getAccessToken();
 
     const client = Client.init({
@@ -103,11 +113,12 @@ export async function fetchMicrosoftFormResponses(formId) {
 
 /**
  * Lista todos os formulários do Microsoft Forms do usuário
+ * @param {string} userToken - (Opcional) Token de usuário para usar diretamente
  * @returns {Promise<Array>} Array de formulários
  */
-export async function listMicrosoftForms() {
+export async function listMicrosoftForms(userToken = null) {
   try {
-    const authClient = getMicrosoftGraphClient();
+    const authClient = getMicrosoftGraphClient(userToken);
     const accessToken = await authClient.getAccessToken();
 
     const client = Client.init({
@@ -144,11 +155,12 @@ export async function listMicrosoftForms() {
 /**
  * Método alternativo: buscar formulário por ID diretamente
  * @param {string} formId - ID do formulário
+ * @param {string} userToken - (Opcional) Token de usuário para usar diretamente
  * @returns {Promise<Object>} Informações do formulário
  */
-export async function getMicrosoftFormById(formId) {
+export async function getMicrosoftFormById(formId, userToken = null) {
   try {
-    const authClient = getMicrosoftGraphClient();
+    const authClient = getMicrosoftGraphClient(userToken);
     const accessToken = await authClient.getAccessToken();
 
     const client = Client.init({

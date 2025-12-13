@@ -3,6 +3,7 @@ import { authenticate } from "../middleware/auth.js";
 import { FormResponse } from "../models/FormResponse.js";
 import { fetchFormResponses, listForms, listFolders } from "../services/googleForms.js";
 import { fetchMicrosoftFormResponses, listMicrosoftForms, getMicrosoftFormById } from "../services/microsoftForms.js";
+import { decodeJWT } from "../utils/decodeToken.js";
 
 const router = express.Router();
 
@@ -34,7 +35,9 @@ router.get("/", authenticate, async (req, res) => {
     // Buscar formulários do Microsoft Forms
     if (!source || source === "microsoft") {
       try {
-        results.microsoft = await listMicrosoftForms();
+        // Tentar usar token de usuário se fornecido no header
+        const userToken = req.headers['x-microsoft-token'] || process.env.MICROSOFT_USER_TOKEN;
+        results.microsoft = await listMicrosoftForms(userToken);
       } catch (error) {
         console.error("Erro ao listar formulários do Microsoft:", error);
       }
@@ -101,7 +104,9 @@ router.post("/:formId/sync", authenticate, async (req, res) => {
     // Buscar respostas do Forms
     let responses;
     if (source === "microsoft") {
-      responses = await fetchMicrosoftFormResponses(formId);
+      // Tentar usar token de usuário se fornecido no header ou body
+      const userToken = req.headers['x-microsoft-token'] || req.body.userToken || process.env.MICROSOFT_USER_TOKEN;
+      responses = await fetchMicrosoftFormResponses(formId, userToken);
     } else {
       responses = await fetchFormResponses(formId);
     }

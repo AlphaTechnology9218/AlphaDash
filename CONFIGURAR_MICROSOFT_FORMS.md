@@ -222,3 +222,4 @@ Após configurar, você pode:
 2. Ver respostas no histórico junto com Google Forms
 3. Filtrar por origem (Google ou Microsoft) no histórico
 
+

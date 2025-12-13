@@ -124,3 +124,4 @@ app.use(cors({
 **O problema é que `FRONTEND_URL` não está configurada ou está com a URL errada no Render!**
 
 
+

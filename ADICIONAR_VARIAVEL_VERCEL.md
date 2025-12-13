@@ -147,3 +147,4 @@ Se a interface do Vercel não mostrar as opções de ambiente, **não se preocup
 **O importante é adicionar a variável e fazer um novo deploy!**
 
 
+

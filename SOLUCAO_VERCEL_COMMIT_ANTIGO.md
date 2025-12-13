@@ -121,3 +121,4 @@ O Vercel faz deploy automático quando você faz push. Se não está atualizando
 **O problema é que o Vercel está usando um commit antigo. Siga uma das soluções acima!**
 
 
+
