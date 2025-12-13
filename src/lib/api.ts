@@ -116,3 +116,6 @@ export const dataAPI = {
     fetchWithAuth(`/data/sessions/${id}`, { method: "DELETE" }),
 };
 
+// Export formsAPI from formsAPI.ts
+export { formsAPI } from "./formsAPI";
+

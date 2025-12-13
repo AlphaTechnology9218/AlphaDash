@@ -5,6 +5,7 @@ import cors from "cors";
 import { connectDB } from "./db.js";
 import authRoutes from "./routes/auth.js";
 import dataRoutes from "./routes/data.js";
+import formsRoutes from "./routes/forms.js";
 
 const app = express();
 
@@ -55,7 +56,8 @@ app.get("/", (_req, res) => {
     endpoints: {
       health: "/health",
       auth: "/api/auth",
-      data: "/api/data"
+      data: "/api/data",
+      forms: "/api/forms"
     }
   });
 });
@@ -67,6 +69,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/data", dataRoutes);
+app.use("/api/forms", formsRoutes);
 
 const port = process.env.PORT || 3001;
 
